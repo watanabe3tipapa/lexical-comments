@@ -20,7 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    if (path === '/api/login' && method === 'POST') {
+    if (path === '/login' && method === 'POST') {
       const { name } = req.body || {};
       const id = generateId();
 

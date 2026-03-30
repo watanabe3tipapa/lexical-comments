@@ -48,7 +48,7 @@ function getUser(): User | null {
 
 export const auth = {
   async login(name: string): Promise<{ user: User; token: string }> {
-    const res = await fetch(`${API_BASE}/api/login`, {
+    const res = await fetch(`${API_BASE}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name }),
