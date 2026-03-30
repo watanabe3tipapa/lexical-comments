@@ -2,5 +2,5 @@
   "buildCommand": "npm run build",
   "installCommand": "npm install",
   "framework": "vite",
-  "regions": ["icn1"]
+  "outputDirectory": "dist"
 }
