@@ -1,7 +1,4 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
 
 function generateId(): string {
   return Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
@@ -23,23 +20,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       const { name } = body || {};
-      const id = generateId();
 
-      const user = await prisma.user.upsert({
-        where: { id },
-        update: { name: name || 'Anonymous' },
-        create: { id, name: name || 'Anonymous' },
-      });
+      const user = {
+        id: generateId(),
+        name: name || 'Anonymous',
+      };
 
       const token = generateId();
-      await prisma.session.create({
-        data: { token, userId: user.id, expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) },
-      });
 
-      return res.json({
-        user: { id: user.id, name: user.name, avatar: user.avatar, email: user.email },
-        token
-      });
+      return res.json({ user, token });
     } catch (error) {
       console.error('Login error:', error);
       return res.status(500).json({ error: 'Login failed' });
