@@ -1,7 +1,39 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { PrismaClient } from '@prisma/client';
+import { readFileSync, writeFileSync } from 'fs';
+import { join } from 'path';
 
-const prisma = new PrismaClient();
+const DATA_FILE = '/tmp/users.json';
+
+interface User {
+  id: string;
+  name: string;
+  avatar?: string;
+  email?: string;
+  createdAt: string;
+}
+
+interface Session {
+  token: string;
+  userId: string;
+  expiresAt: string;
+}
+
+interface DataStore {
+  users: User[];
+  sessions: Session[];
+}
+
+function readData(): DataStore {
+  try {
+    return JSON.parse(readFileSync(DATA_FILE, 'utf-8'));
+  } catch {
+    return { users: [], sessions: [] };
+  }
+}
+
+function writeData(data: DataStore): void {
+  writeFileSync(DATA_FILE, JSON.stringify(data));
+}
 
 function generateId(): string {
   return Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
@@ -23,24 +55,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       const { name } = body || {};
-      const id = generateId();
 
-      const user = await prisma.user.create({
-        data: { id, name: name || 'Anonymous' },
-      });
+      const data = readData();
 
-      const token = generateId();
-      await prisma.session.create({
-        data: { token, userId: user.id, expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) },
-      });
+      const user: User = {
+        id: generateId(),
+        name: name || 'Anonymous',
+        createdAt: new Date().toISOString(),
+      };
+
+      data.users.push(user);
+
+      const session: Session = {
+        token: generateId(),
+        userId: user.id,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      };
+
+      data.sessions.push(session);
+      writeData(data);
 
       return res.json({
         user: { id: user.id, name: user.name, avatar: user.avatar, email: user.email },
-        token
+        token: session.token
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Login error:', error);
-      return res.status(500).json({ error: 'Login failed', details: error?.message });
+      return res.status(500).json({ error: 'Login failed' });
     }
   }
 
