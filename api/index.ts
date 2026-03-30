@@ -11,8 +11,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const path = req.path || '/';
   const method = req.method;
 
-  res.setHeader('Access-Control-Allow-Origin', 'https://lexical-comments.vercel.app');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
@@ -26,13 +25,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (path === '/api/auth/login' && method === 'POST') {
-      const { name } = req.body;
+      const { name } = req.body || {};
       const id = generateId();
 
       const user = await prisma.user.upsert({
         where: { id },
-        update: { name },
-        create: { id, name },
+        update: { name: name || 'Anonymous' },
+        create: { id, name: name || 'Anonymous' },
       });
 
       const token = generateId();
@@ -49,6 +48,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(404).json({ error: 'Not found' });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Internal error' });
+    return res.status(500).json({ error: 'Internal error', details: String(error) });
   }
 }
