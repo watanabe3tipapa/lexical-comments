@@ -1,9 +1,0 @@
-node_modules
-*.log
-.env
-.git
-.vscode
-.DS_Store
-*.local
-dist
-README.md
