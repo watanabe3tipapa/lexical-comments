@@ -48,7 +48,7 @@ function getUser(): User | null {
 
 export const auth = {
   async login(name: string): Promise<{ user: User; token: string }> {
-    const res = await fetch(`${API_BASE}/api/auth/login`, {
+    const res = await fetch(`${API_BASE}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name }),
@@ -60,23 +60,10 @@ export const auth = {
     return data;
   },
 
-  async getGitHubAuthUrl(): Promise<string> {
-    const res = await fetch(`${API_BASE}/api/auth/github`);
-    if (!res.ok) throw new Error('Failed to get GitHub auth URL');
-    const data = await res.json();
-    return data.url;
-  },
-
   async session(): Promise<User | null> {
     const token = getToken();
     if (!token) return null;
-    
-    const res = await fetch(`${API_BASE}/api/auth/session`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.user;
+    return getUser();
   },
 
   logout(): void {

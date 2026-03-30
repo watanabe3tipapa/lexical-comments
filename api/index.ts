@@ -8,9 +8,8 @@ function generateId(): string {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const url = req.url || '';
-  const pathname = url.split('?')[0];
   const method = req.method;
+  const path = (req.url || '').split('?')[0];
 
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
@@ -21,11 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    if (pathname === '/api/health' && method === 'GET') {
-      return res.json({ status: 'ok' });
-    }
-
-    if (pathname === '/api/auth/login' && method === 'POST') {
+    if (path === '/api/login' && method === 'POST') {
       const { name } = req.body || {};
       const id = generateId();
 
@@ -46,7 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    return res.status(404).json({ error: 'Not found', path: pathname });
+    return res.status(404).json({ error: 'Not found' });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Internal error' });
