@@ -2,11 +2,21 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { PrismaClient } from '@prisma/client';
 
+declare global {
+  var prisma: PrismaClient | undefined;
+}
+
 const app = new Hono();
-const prisma = new PrismaClient();
+const prisma = globalThis.prisma || new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+});
+
+if (process.env.NODE_ENV !== 'production') {
+  globalThis.prisma = prisma;
+}
 
 app.use('*', cors({
-  origin: true,
+  origin: ['https://lexical-comments.vercel.app', 'http://localhost:3000', 'http://localhost:5173'],
   credentials: true,
 }));
 
