@@ -8,7 +8,8 @@ function generateId(): string {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const path = req.path || '/';
+  const url = req.url || '/';
+  const pathname = new URL(url, 'https://lexical-comments.vercel.app').pathname;
   const method = req.method;
 
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,11 +21,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    if (path === '/api/health' && method === 'GET') {
+    if (pathname === '/api/health' && method === 'GET') {
       return res.json({ status: 'ok' });
     }
 
-    if (path === '/api/auth/login' && method === 'POST') {
+    if (pathname === '/api/auth/login' && method === 'POST') {
       const { name } = req.body || {};
       const id = generateId();
 
@@ -45,9 +46,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    return res.status(404).json({ error: 'Not found' });
+    return res.status(404).json({ error: 'Not found', path: pathname });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Internal error', details: String(error) });
+    return res.status(500).json({ error: 'Internal error' });
   }
 }
