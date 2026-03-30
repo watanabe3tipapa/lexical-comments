@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id
+  name      String
+  email     String?
+  avatar    String?
+  comments  Comment[]
+  replies   Reply[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Comment {
+  id           String   @id @default(cuid())
+  content      String
+  selectedText String
+  resolved     Boolean  @default(false)
+  userId       String
+  userName     String
+  userImage    String?
+  documentId   String   @default("default")
+  replies      Reply[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@index([resolved])
+  @@index([userId])
+}
+
+model Reply {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  userName  String
+  userImage String?
+  commentId String
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([commentId])
+  @@index([userId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+}
