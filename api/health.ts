@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
-  res.json({ status: 'API is running', path: req.path });
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 }
