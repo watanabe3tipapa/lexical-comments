@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_BASE = '';
 
 export interface User {
   id: string;
@@ -48,10 +48,11 @@ function getUser(): User | null {
 
 export const auth = {
   async login(name: string): Promise<{ user: User; token: string }> {
-    const res = await fetch(`${API_BASE}/api/login`, {
+    const res = await fetch(`/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name }),
+      credentials: 'include',
     });
     if (!res.ok) throw new Error('Login failed');
     const data = await res.json();
@@ -69,10 +70,18 @@ export const auth = {
   logout(): void {
     localStorage.removeItem('gh_token');
     localStorage.removeItem('gh_user');
+    fetch(`/api/auth/logout`, { method: 'POST', credentials: 'include' });
   },
 
   getUser(): User | null {
     return getUser();
+  },
+
+  async getGitHubAuthUrl(): Promise<string> {
+    const res = await fetch(`/api/auth/github`);
+    if (!res.ok) throw new Error('GitHub OAuth not configured');
+    const data = await res.json();
+    return data.url;
   },
 
   onGitHubCallback(): void {
@@ -86,19 +95,20 @@ export const auth = {
 
 export const api = {
   async getComments(): Promise<Comment[]> {
-    const res = await fetch(`${API_BASE}/api/comments`);
+    const res = await fetch(`/api/comments`);
     if (!res.ok) throw new Error('Failed to fetch comments');
     return res.json();
   },
 
   async createComment(data: CreateCommentData): Promise<Comment> {
     const token = getToken();
-    const res = await fetch(`${API_BASE}/api/comments`, {
+    const res = await fetch(`/api/comments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify(data),
     });
     if (!res.ok) throw new Error('Failed to create comment');
@@ -107,12 +117,13 @@ export const api = {
 
   async resolveComment(id: string, resolved: boolean): Promise<Comment> {
     const token = getToken();
-    const res = await fetch(`${API_BASE}/api/comments/${id}/resolve`, {
+    const res = await fetch(`/api/comments/${id}/resolve`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify({ resolved }),
     });
     if (!res.ok) throw new Error('Failed to resolve comment');
@@ -121,21 +132,25 @@ export const api = {
 
   async deleteComment(id: string): Promise<void> {
     const token = getToken();
-    const res = await fetch(`${API_BASE}/api/comments/${id}`, {
+    const res = await fetch(`/api/comments/${id}`, {
       method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: 'include',
     });
     if (!res.ok) throw new Error('Failed to delete comment');
   },
 
   async createReply(commentId: string, data: CreateReplyData): Promise<Reply> {
     const token = getToken();
-    const res = await fetch(`${API_BASE}/api/comments/${commentId}/replies`, {
+    const res = await fetch(`/api/comments/${commentId}/replies`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify(data),
     });
     if (!res.ok) throw new Error('Failed to create reply');
@@ -144,9 +159,12 @@ export const api = {
 
   async deleteReply(id: string): Promise<void> {
     const token = getToken();
-    const res = await fetch(`${API_BASE}/api/replies/${id}`, {
+    const res = await fetch(`/api/replies/${id}`, {
       method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: 'include',
     });
     if (!res.ok) throw new Error('Failed to delete reply');
   },
