@@ -1,65 +1,45 @@
 # Lexical Comments Editor
 
-文章を選択してコメントを追加できる、リッチテキストエディターです。
+文章を選択してコメントを追加できるリッチテキストエディターです。Lexical を用いた注釈（コメント）機能を備え、コメントのスレッド返信や解決管理、エディターの書式設定やMarkdown出力などが利用できます。
 
-![Lexical Editor](https://img.shields.io/badge/Lexical-Meta's%20Editor-purple)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)
-![Vite](https://img.shields.io/badge/Vite-8.0-646CFF)
+ホームページ: https://lexical-comments.vercel.app
+
+## 概要
+
+このリポジトリは、テキスト選択によるコメント追加・スレッド返信・解決管理などのコメント機能を組み合わせたリッチテキストエディターの実装例です。エディター本体には Meta の Lexical を用い、フロントエンドは TypeScript と React ベースで構築されています。
 
 ## 主な機能
 
-### ✏️ エディター機能
-- **Lexical Editor** - Meta社開発した高性能エディター
-- **書式設定** - 太字、斜体，下線、取り消し線、コード
-- **自動保存** - localStorageに内容を自動保存
-- **Markdown出力** - 内容をMarkdown形式でダウンロード
+- エディター機能
+  - 書式設定（太字、斜体、下線、取り消し線、コードなど）
+  - 自動保存（localStorage への保存）
+  - Markdown 形式での出力（ダウンロード）
+- コメント機能
+  - テキスト選択からコメントを追加
+  - スレッド形式の返信
+  - 解決/未解決ステータスの切替
+  - コメント一覧のフィルター表示（すべて / 未解決 / 解決済み）
+- 認証（README に記載されている内容）
+  - GitHub OAuth によるログイン（オプション）
+  - 名前のみのシンプルなログイン（オプション）
 
-### 💬 コメント機能
-- **テキスト選択でコメント追加** - 任意のテキストを選択してコメント
-- **スレッド返信** - コメントに対して返信可能
-- **解決ステータス** - コメントを解決/未解決状態に切り替え
-- **コメント一覧** - 全コメントをフィルターして表示
+## 技術スタック（リポジトリ内の記載・実装依拠）
 
-### 🔐 認証
-- **GitHub OAuth** - GitHubアカウントでログイン可能
-- **シンプルなログイン** - 名前でもログイン可能
+- フレームワーク: Next.js（package.json に next が含まれます）
+- ライブラリ: React, TypeScript
+- エディター: Lexical
+- スタイリング: Tailwind CSS（設定ファイルが含まれています）
+- データアクセス/ORM: Prisma（prisma フォルダと prisma 関連パッケージが存在します）
+- ホスティング / デプロイ: Vercel（vercel.json が含まれます）
 
-## スクリーンショット
+（既存 README 内で言及されている他の要素：Neon(PostgreSQL) や Hono などについての記載があります。詳細はリポジトリ内の設定ファイルや .env.example を参照してください。）
 
-```
-┌─────────────────────────────────────────────────┐
-│  Lexical Comments                    [アバター] 名前 ログアウト │
-├─────────────────────────────────────────────────┤
-│  [B] [I] [U] [S] [</>] │ [Save] [Download] [Comments(3)] │
-├─────────────────────────────────────────────────┤
-│  ┌───────────────────────────────────────────┐ │
-│  │                                           │ │
-│  │     ここにテキストを入力...                │ │
-│  │                                           │ │
-│  └───────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────┘
-```
+## 開発環境のセットアップ（確認できる事実に基づく最小手順）
 
-## 技術スタック
+前提
+- Node.js（README では Node.js 18 以上が推奨されています）
 
-| カテゴリ | 技術 |
-|----------|------|
-| フレームワーク | Vite + React + TypeScript |
-| エディター | Lexical (Meta社) |
-| スタイリング | Tailwind CSS v4 |
-| APIサーバー | Hono |
-| データベース | Neon (PostgreSQL) |
-| ORM | Prisma |
-| 認証 | GitHub OAuth / シンプルログイン |
-| ホスティング | Vercel |
-
-## 始め方
-
-### 前提条件
-- Node.js 18以上
-- npm または yarn
-
-### インストール
+インストール
 
 ```bash
 # リポジトリをクローン
@@ -70,178 +50,80 @@ cd lexical-comments
 npm install
 ```
 
-### 環境変数の設定 (.env)
+開発サーバーの起動
 
-```env
-# APIサーバーURL
-VITE_API_URL=http://localhost:3001
-
-# GitHub OAuth認証（オプション）
-GITHUB_ID=your-github-client-id
-GITHUB_SECRET=your-github-client-secret
-```
-
-### GitHub OAuthの設定
-
-1. https://github.com/settings/applications/new で新しいOAuth Appを作成
-2. 以下の設定を入力：
-   - **Application name**: Lexical Comments
-   - **Homepage URL**: http://localhost:3000
-   - **Authorization callback URL**: http://localhost:3001/api/auth/github/callback
-3. `Client ID`と`Client Secret`をコピー
-4. `.env`ファイルに設定
-
-### 開発サーバーの起動
+このリポジトリの package.json に定義されているスクリプトに従って、開発サーバーを起動できます（確認できるコマンド）:
 
 ```bash
-# APIサーバーとフロントエンドを同時に起動
-npm run dev:all
-
-# または個別に起動
-
-# ターミナル1: APIサーバー (ポート3001)
-npm run dev:server
-
-# ターミナル2: フロントエンド (ポート3000)
+# 開発サーバーを起動
 npm run dev
 ```
 
-ブラウザで http://localhost:3000 を開いてください。
+ブラウザで http://localhost:3000 を開くとアプリが確認できることが期待されます（Next.js のデフォルトポート）。
 
-### ビルド
+ビルド・実行
 
 ```bash
+# ビルド（prisma generate を含むビルド手順が package.json に設定されています）
 npm run build
+
+# 本番用の起動
+npm run start
 ```
 
-dist フォルダーに最適化されたファイルが生成されます。
+環境変数
 
-## 使い方
+- リポジトリには .env.example（および既存 README）に環境変数の例が含まれています。GitHub OAuth を利用する場合は GITHUB_ID / GITHUB_SECRET の設定、デプロイ時にデータベースを利用する場合は DATABASE_URL 等の設定が必要になる想定です。詳細はリポジトリ内の .env.example や設定ファイルを参照してください。
 
-### 1. ログイン
-2つの方法でログインできます：
-- **GitHubでログイン** - OAuth認証（プロフィール画像も表示）
-- **名前でログイン** -  あなたの名前入力
+※ README に示された環境変数例（VITE_API_URL 等）が残っていますが、本リポジトリの実装（package.json / Next.js 構成）に合わせて .env.example を参照のうえ必要な値を設定してください。
 
-### 2. 文章を入力
-エディターに好きな文章を入力できます。
+## プロジェクトの主なファイル・ディレクトリ
 
-### 3. コメントを追加
-コメントしたいテキストを選択して、ポップオーバーでコメントを入力します。
+（リポジトリ内ファイルをもとに整理）
 
-```
-1. テキストを選択
-2. コメントを入力
-3. Ctrl+Enter または「追加」ボタンをクリック
-```
+- app/ または src/ — アプリケーションのソース
+- components/ — UI コンポーネント
+- lib/ — API クライアントやユーティリティ
+- prisma/ — Prisma スキーマ・マイグレーション関連
+- public/ — 静的アセット
+- package.json, next.config.js, vercel.json, tailwind.config.js, tsconfig.json
 
-### 4. コメントを管理
-**Comments**ボタンをクリックすると：
-- すべてのコメント一覧を表示
-- フィルター：すべて / 未解決 / 解決済み
-- 返信機能
-- 解決/未解決の切り替え
-- 削除（自分のコメントのみ）
+実際の構成はリポジトリ内のディレクトリを参照してください。
 
-### 5. 保存と出力
-- **Save** - localStorageに保存
-- **Download** - Markdownファイルとしてダウンロード
+## API（README に記載のエンドポイント例）
 
-## プロジェクト構成
+既存 README には Next.js API もしくはサーバー側エンドポイントの一覧が記載されています。リポジトリ内の API 実装（/api/* 相当）を確認してください。例として README に記載されているエンドポイントの一部:
 
-```
-lexical-comments/
-├── src/
-│   ├── components/
-│   │   └── LexicalEditorComponent.tsx  # エディター + コメントUI
-│   ├── lib/
-│   │   └── api.ts                    # APIクライアント + 認証
-│   ├── server/
-│   │   └── index.ts                  # Hono APIサーバー
-│   ├── App.tsx                      # メインアプリ
-│   └── main.tsx                     # エントリーポイント
-├── .env                             # 環境変数
-├── package.json
-└── README.md
-```
+- GET /api/health
+- POST /api/auth/login
+- GET /api/auth/session
+- POST /api/auth/logout
+- GET /api/comments, POST /api/comments
+- PATCH /api/comments/:id/resolve, DELETE /api/comments/:id
+- POST /api/comments/:id/replies, DELETE /api/replies/:id
 
-## APIエンドポイント
+（詳細はソース中の API 実装をご確認ください。）
 
-| メソッド | エンドポイント | 説明 |
-|---------|--------------|------|
-| GET | /api/health | サーバー状態確認 |
-| GET | /api/auth/github | GitHub OAuth URL取得 |
-| GET | /api/auth/github/callback | GitHub OAuthコールバック |
-| POST | /api/auth/login | 名前でログイン |
-| GET | /api/auth/session | 現在のセッション取得 |
-| POST | /api/auth/logout | ログアウト |
-| GET | /api/comments | コメント一覧取得 |
-| POST | /api/comments | コメント作成 |
-| PATCH | /api/comments/:id/resolve | コメント解決状態更新 |
-| DELETE | /api/comments/:id | コメント削除 |
-| POST | /api/comments/:id/replies | 返信作成 |
-| DELETE | /api/replies/:id | 返信削除 |
+## デプロイ
 
-## Vercelへのデプロイ
+vercel.json が含まれており、Vercel へのデプロイを想定した構成が用意されています。デプロイ時は環境変数（DATABASE_URL, APP_URL, GITHUB_ID, GITHUB_SECRET 等）を Vercel 側に設定してください（詳細はリポジトリ内の記載や .env.example を参照）。
 
-### 1. GitHubにプッシュ
+## 使い方（ユーザー操作の概要）
 
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin <your-github-repo-url>
-git push -u origin main
-```
+- ログイン: GitHub OAuth または名前入力の簡易ログイン（README に記載）
+- テキストを入力し、コメントしたい箇所を選択してコメントを追加
+- コメントはスレッドで返信可能、解決状態の切替や削除（自分のコメントのみ）
+- Save（localStorage 保存）や Markdown ダウンロードでコンテンツを保存可能
 
-### 2. Vercelでインポート
+## 状態・更新
 
-1. https://vercel.com にアクセス
-2. **New Project** をクリック
-3. GitHubリポジトリを選択
-4. **Environment Variables** を設定：
-
-| キー | 値 |
-|------|-----|
-| `DATABASE_URL` | Neonの接続文字列 |
-| `APP_URL` | VercelのデプロイURL（例: https://your-app.vercel.app） |
-| `GITHUB_ID` | GitHub OAuth Client ID（オプション） |
-| `GITHUB_SECRET` | GitHub OAuth Client Secret（オプション） |
-
-### 3. デプロイ
-
-**Deploy** ボタンをクリック。数分で完了します。
-
-### 本番環境での環境変数
-
-Vercelにデプロイする場合は、以下の環境変数を設定してください：
-- `DATABASE_URL` - NeonのPostgreSQL接続文字列（必須）
-- `APP_URL` - VercelのデプロイURL（例: https://lexical-comments.vercel.app）
-- `GITHUB_ID` - GitHub OAuth Client ID（オプション）
-- `GITHUB_SECRET` - GitHub OAuth Client Secret（オプション）
-
-## カスタマイズ
-
-### テーマの編集
-`src/index.css` でCSS変数を変更してテーマを変更できます：
-
-```css
-:root {
-  --accent: #aa3bff;        /* アクセントカラー */
-  --bg: #ffffff;           /* 背景色 */
-  --text: #6b6375;          /* テキスト色 */
-}
-```
-
-### 書式の追加
-`LexicalEditorComponent.tsx`の`SUPPORTED_FORMATS`配列に新しい書式を追加できます。
-
-
-### 実装
-
-このツールは、 .|main（https://watanabe3ti.com/）|. で使用しています。
-
+- 最終更新: 2026-07-04T14:46:35Z（リポジトリの更新日時に基づく）
+- Archived: false
 
 ## ライセンス
 
-MIT
+README に記載されたとおり MIT ライセンスです。
+
+---
+
+参考: この README はリポジトリ内の既存 README と実装上の根拠（package.json、ルートファイル群など）を基に再構成しています。実行や設定の詳細はリポジトリ内の .env.example、設定ファイル、ソースコードを参照してください。
